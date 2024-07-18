@@ -1,13 +1,13 @@
-import winston from "winston"
-import { BaseLogger } from "./base-logger"
-import { LogEntry, LogLevel } from "./logger.interface"
+import winston from "winston";
+import { BaseLogger } from "./base-logger";
+import { LogEntry, LogLevel } from "./logger.interface";
 
 export class ServerLogger extends BaseLogger {
-  private static instance: ServerLogger
-  private logger: winston.Logger
+  private static instance: ServerLogger;
+  private logger: winston.Logger;
 
   private constructor() {
-    super()
+    super();
 
     this.logger = winston.createLogger({
       level: process.env.LOG_LEVEL || "info",
@@ -21,11 +21,11 @@ export class ServerLogger extends BaseLogger {
       transports: [
         new winston.transports.File({
           filename: "logs/error.log",
-          level: "error",
+          level: "error"
         }),
-        new winston.transports.File({ filename: "logs/combined.log" }),
-      ],
-    })
+        new winston.transports.File({ filename: "logs/combined.log" })
+      ]
+    });
 
     if (process.env.NODE_ENV !== "production") {
       this.logger.add(
@@ -33,9 +33,9 @@ export class ServerLogger extends BaseLogger {
           format: winston.format.combine(
             winston.format.colorize(),
             winston.format.simple()
-          ),
+          )
         })
-      )
+      );
     }
   }
 
@@ -47,20 +47,20 @@ export class ServerLogger extends BaseLogger {
    */
   public static getInstance(): ServerLogger {
     if (!ServerLogger.instance) {
-      ServerLogger.instance = new ServerLogger()
+      ServerLogger.instance = new ServerLogger();
     }
 
-    return ServerLogger.instance
+    return ServerLogger.instance;
   }
 
   protected log(entry: LogEntry): void {
-    const { level, message, meta, error } = entry
+    const { level, message, meta, error } = entry;
     const logMethod = this.logger[
       level as keyof winston.Logger
-    ] as winston.LeveledLogMethod
+    ] as winston.LeveledLogMethod;
 
-    logMethod(message, { ...meta, error })
+    logMethod(message, { ...meta, error });
   }
 }
 
-export const serverLogger = ServerLogger.getInstance()
+export const serverLogger = ServerLogger.getInstance();

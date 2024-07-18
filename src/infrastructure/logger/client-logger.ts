@@ -1,10 +1,10 @@
-import { BaseLogger } from "./base-logger"
-import { LogEntry, LogLevel } from "./logger.interface"
+import { BaseLogger } from "./base-logger";
+import { LogEntry, LogLevel } from "./logger.interface";
 
 export class ClientLogger extends BaseLogger {
-  private static instance: ClientLogger
+  private static instance: ClientLogger;
   private constructor() {
-    super()
+    super();
   }
 
   /**
@@ -15,10 +15,10 @@ export class ClientLogger extends BaseLogger {
    */
   public static getInstance(): ClientLogger {
     if (!ClientLogger.instance) {
-      ClientLogger.instance = new ClientLogger()
+      ClientLogger.instance = new ClientLogger();
     }
 
-    return ClientLogger.instance
+    return ClientLogger.instance;
   }
 
   /**
@@ -26,14 +26,14 @@ export class ClientLogger extends BaseLogger {
    * @param entry - The log entry to be logged.
    */
   protected log(entry: LogEntry): void {
-    const { timestamp, level, message, meta, error } = entry
-    const consoleMethod = this.getConsoleMethod(level)
-    const logParts = [`[${timestamp}] [${level.toUpperCase()}]: ${message}`]
+    const { timestamp, level, message, meta, error } = entry;
+    const consoleMethod = this.getConsoleMethod(level);
+    const logParts = [`[${timestamp}] [${level.toUpperCase()}]: ${message}`];
 
-    if (meta) logParts.push(JSON.stringify(meta))
-    if (error) logParts.push(error.stack || error.message)
+    if (meta) logParts.push(JSON.stringify(meta));
+    if (error) logParts.push(error.stack || error.message);
 
-    consoleMethod.apply(console, logParts)
+    consoleMethod.apply(console, logParts);
   }
 
   /**
@@ -45,21 +45,21 @@ export class ClientLogger extends BaseLogger {
   private getConsoleMethod(level: LogLevel): (...data: any[]) => void {
     switch (level) {
       case LogLevel.DEBUG:
-        return console.debug
+        return console.debug;
 
       case LogLevel.INFO:
-        return console.info
+        return console.info;
 
       case LogLevel.WARN:
-        return console.warn
+        return console.warn;
 
       case LogLevel.ERROR:
-        return console.error
+        return console.error;
 
       default:
-        return console.log
+        return console.log;
     }
   }
 }
 
-export const clientLogger = ClientLogger.getInstance()
+export const clientLogger = ClientLogger.getInstance();

@@ -1,6 +1,6 @@
-import { MetadataRoute } from "next"
-import { locales, pathnames, defaultLocale, host } from "@/config/config"
-import { getPathname } from "@/navigation"
+import { MetadataRoute } from "next";
+import { locales, pathnames, defaultLocale, host } from "@/config/config";
+import { getPathname } from "@/navigation";
 
 /**
  * Gets the URL for the given pathname and locale.
@@ -10,8 +10,8 @@ import { getPathname } from "@/navigation"
  * @returns The assigned URL
  */
 function getUrl(key: keyof typeof pathnames, locale: (typeof locales)[number]) {
-  const pathname = getPathname({ locale, href: key })
-  return `${host}/${locale}${pathname === "/" ? "" : pathname}`
+  const pathname = getPathname({ locale, href: key });
+  return `${host}/${locale}${pathname === "/" ? "" : pathname}`;
 }
 
 /**
@@ -28,9 +28,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       languages: Object.fromEntries(
         locales.map((locale) => [
           locale,
-          getUrl(key as keyof typeof pathnames, locale),
+          getUrl(key as keyof typeof pathnames, locale)
         ])
-      ),
-    },
-  }))
+      )
+    }
+  }));
 }

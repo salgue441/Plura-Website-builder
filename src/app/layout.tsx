@@ -1,8 +1,8 @@
-import "./styles.css"
+import "./styles.css";
 
 type Props = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 /**
  * Since there's a not-found page on root
@@ -11,5 +11,5 @@ type Props = {
  * @returns ReactNode - The layout of the application
  */
 export default function RootLayout({ children }: Props) {
-  return children
+  return children;
 }

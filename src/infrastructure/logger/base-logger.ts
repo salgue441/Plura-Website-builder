@@ -1,7 +1,7 @@
-import { ILogger, LogLevel, LogEntry } from "./logger.interface"
+import { ILogger, LogLevel, LogEntry } from "./logger.interface";
 
 export abstract class BaseLogger implements ILogger {
-  protected abstract log(entry: LogEntry): void
+  protected abstract log(entry: LogEntry): void;
 
   /**
    * Creates a log entry
@@ -24,8 +24,8 @@ export abstract class BaseLogger implements ILogger {
       level: level,
       message: message,
       meta: meta,
-      error: error,
-    }
+      error: error
+    };
   }
 
   /**
@@ -35,7 +35,7 @@ export abstract class BaseLogger implements ILogger {
    * @param meta: Record<string, unknown> - Additional metadata to log
    */
   debug(message: string, meta?: Record<string, unknown> | undefined): void {
-    this.log(this.createLogEntry(LogLevel.DEBUG, message, meta))
+    this.log(this.createLogEntry(LogLevel.DEBUG, message, meta));
   }
 
   /**
@@ -45,7 +45,7 @@ export abstract class BaseLogger implements ILogger {
    * @param meta: Record<string, unknown> - Additional metadata to log
    */
   info(message: string, meta?: Record<string, unknown> | undefined): void {
-    this.log(this.createLogEntry(LogLevel.INFO, message, meta))
+    this.log(this.createLogEntry(LogLevel.INFO, message, meta));
   }
 
   /**
@@ -55,7 +55,7 @@ export abstract class BaseLogger implements ILogger {
    * @param meta: Record<string, unknown> - Additional metadata to log
    */
   warn(message: string, meta?: Record<string, unknown> | undefined): void {
-    this.log(this.createLogEntry(LogLevel.WARN, message, meta))
+    this.log(this.createLogEntry(LogLevel.WARN, message, meta));
   }
 
   /**
@@ -70,6 +70,6 @@ export abstract class BaseLogger implements ILogger {
     error?: Error | undefined,
     meta?: Record<string, unknown> | undefined
   ): void {
-    this.log(this.createLogEntry(LogLevel.ERROR, message, meta, error))
+    this.log(this.createLogEntry(LogLevel.ERROR, message, meta, error));
   }
 }

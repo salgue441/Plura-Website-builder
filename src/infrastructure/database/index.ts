@@ -1,20 +1,20 @@
-import { PrismaClient } from "@prisma/client"
-import { serverLogger } from "../logger/server-logger"
+import { PrismaClient } from "@prisma/client";
+import { serverLogger } from "../logger/server-logger";
 
 interface DatabaseConfig {
-  logQueries: boolean
-  connectionTimeout: number
+  logQueries: boolean;
+  connectionTimeout: number;
 }
 
 const defaultConfig: DatabaseConfig = {
   logQueries: process.env.NODE_ENV !== "production",
-  connectionTimeout: 5000,
-}
+  connectionTimeout: 5000
+};
 
-let prismaInstance: PrismaClient | null = null
+let prismaInstance: PrismaClient | null = null;
 
 declare global {
-  var prisma: PrismaClient | undefined
+  var prisma: PrismaClient | undefined;
 }
 
 /**
@@ -26,14 +26,14 @@ declare global {
 export function createPrismaClient(
   config: Partial<DatabaseConfig> = {}
 ): PrismaClient {
-  const fullConfig = { ...defaultConfig, ...config }
+  const fullConfig = { ...defaultConfig, ...config };
 
   if (!prismaInstance) {
     prismaInstance = new PrismaClient({
-      log: fullConfig.logQueries ? ["query", "error", "warn"] : ["error"],
-    })
+      log: fullConfig.logQueries ? ["query", "error", "warn"] : ["error"]
+    });
   }
-  return prismaInstance
+  return prismaInstance;
 }
 
 /**
@@ -46,7 +46,7 @@ export function createPrismaClient(
 export async function connectToDatabase(
   config: Partial<DatabaseConfig> = {}
 ): Promise<void> {
-  const db = createPrismaClient(config)
+  const db = createPrismaClient(config);
 
   try {
     await Promise.race([
@@ -56,13 +56,13 @@ export async function connectToDatabase(
           () => reject(new Error("Database Connection Timeout")),
           config.connectionTimeout ?? defaultConfig.connectionTimeout
         )
-      ),
-    ])
+      )
+    ]);
 
-    serverLogger.info("Database connected successfully")
+    serverLogger.info("Database connected successfully");
   } catch (error: unknown) {
-    serverLogger.error("Database connection failed", error as Error)
-    throw error
+    serverLogger.error("Database connection failed", error as Error);
+    throw error;
   }
 }
 
@@ -73,20 +73,20 @@ export async function connectToDatabase(
  */
 export async function disconnectFromDatabase(): Promise<void> {
   if (prismaInstance) {
-    await prismaInstance.$disconnect()
+    await prismaInstance.$disconnect();
 
-    prismaInstance = null
-    serverLogger.info("Database disconnected successfully")
+    prismaInstance = null;
+    serverLogger.info("Database disconnected successfully");
   }
 }
 
 process.on("SIGINT", async () => {
-  await disconnectFromDatabase()
-  process.exit(0)
-})
+  await disconnectFromDatabase();
+  process.exit(0);
+});
 
 if (process.env.NODE_ENV !== "production") {
-  globalThis.prisma = createPrismaClient()
+  globalThis.prisma = createPrismaClient();
 }
 
-export const db = createPrismaClient()
+export const db = createPrismaClient();

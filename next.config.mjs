@@ -1,4 +1,4 @@
-import createNextPlugin from 'next-intl/plugin'
+import createNextPlugin from "next-intl/plugin";
 
 /** @type {import('next-intl').NextIntlPlugin} */
 const withNextIntl = createNextPlugin();
@@ -8,25 +8,25 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'uploadthing.com'
+        protocol: "https",
+        hostname: "uploadthing.com"
       },
       {
-        protocol: 'https',
-        hostname: 'utfs.io'
+        protocol: "https",
+        hostname: "utfs.io"
       },
       {
-        protocol: 'https',
-        hostname: 'img.clerk.com'
+        protocol: "https",
+        hostname: "img.clerk.com"
       },
       {
-        protocol: 'https',
-        hostname: 'files.stripe.com'
-      },
+        protocol: "https",
+        hostname: "files.stripe.com"
+      }
     ]
   },
   reactStrictMode: false,
-  pageExtensions: ['tsx', 'ts'],
+  pageExtensions: ["tsx", "ts"]
 };
 
 export default withNextIntl(nextConfig);
