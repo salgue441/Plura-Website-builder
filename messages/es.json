@@ -1,1 +1,54 @@
-{}
+{
+  "LocaleLayout": {
+    "title": "Plura Agency"
+  },
+  "LocaleSwitcher": {
+    "label": "Selecciona un idioma",
+    "locale": "{locale, select, en {Inglés} es {Español} other {#}}"
+  },
+  "Site": {
+    "title": "Administra tu agencia, en un solo lugar",
+    "app_name": "Plura",
+    "banner": "Elige lo que más te convenga",
+    "strategies": "Nuestros planes de precios sencillos están diseñados para satisfacer tus necesidades. Si no estás listo para comprometerte, puedes comenzar de forma gratuita",
+    "navigation": {
+      "pricing": "Precios",
+      "about": "Acerca de",
+      "documentation": "Documentación",
+      "features": "Características"
+    },
+    "pricing_cards": [
+      {
+        "title": "Starter",
+        "description": "Perfecto para probar plura",
+        "price": "Gratis",
+        "duration": "",
+        "highlight": "Características clave",
+        "features": [
+          "3 Subcuentas",
+          "2 Miembros del equipo",
+          "Pipelines ilimitados"
+        ],
+        "priceId": ""
+      },
+      {
+        "title": "Unlimited Saas",
+        "description": "El kit definitivo para agencias",
+        "price": "$199",
+        "duration": "mes",
+        "highlight": "Características clave",
+        "features": ["Facturación recurrente", "Equipo de soporte 24/7"],
+        "priceId": "price_1OYxkqFj9oKEERu1KfJGWxgN"
+      },
+      {
+        "title": "Básico",
+        "description": "Para propietarios serios de agencias",
+        "price": "$49",
+        "duration": "mes",
+        "highlight": "Todo en Starter, más",
+        "features": ["Subcuentas ilimitadas", "Miembros del equipo ilimitados"],
+        "priceId": "price_1OYxkqFj9oKEERu1NbKUxXxN"
+      }
+    ]
+  }
+}
