@@ -33,6 +33,7 @@ export function createPrismaClient(
       log: fullConfig.logQueries ? ["query", "error", "warn"] : ["error"]
     });
   }
+
   return prismaInstance;
 }
 
