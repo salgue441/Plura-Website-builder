@@ -53,6 +53,11 @@ function isPublicRoute(pathname: string): boolean {
 
 export default clerkMiddleware(async (auth, request) => {
   const { pathname, hostname, search } = new URL(request.url);
+
+  if (pathname === "/sign-in" || pathname === "/sign-up") {
+    return NextResponse.redirect(new URL(`/en/agency/${pathname}`, request.url));
+  }
+
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
