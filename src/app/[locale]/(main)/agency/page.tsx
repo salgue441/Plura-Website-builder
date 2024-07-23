@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/hooks/use-auth";
 import { LoadingSpinner } from "@/components/modules/loading-spinner";
 

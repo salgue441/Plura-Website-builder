@@ -6,7 +6,7 @@ import { User } from "@clerk/nextjs/server";
 import { LoadingSpinner } from "@/components/modules/loading-spinner";
 
 interface AuthContextValue {
-  user: User | null;
+  user: any | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
 }
@@ -27,6 +27,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const { user, isLoaded, isSignedIn } = useUser();
   const clerk = useClerk();
   const [isLoading, setIsLoading] = useState<boolean>(!isLoaded);
+
+  useEffect(() => {
+    if (isLoaded) {
+      setIsLoading(false);
+    }
+  }, [isLoaded]);
 
   const signOut = useCallback(async () => {
     await clerk.signOut();
