@@ -7,18 +7,22 @@ import { serverLogger } from "@/infrastructure/logger/server-logger";
 export class InvitationService {
   private invitationRepository: InvitationRepository;
   private userRepository: UserRepository;
-  private currentUser: User;
 
   constructor(
     invitationRepository: InvitationRepository,
-    userRepository: UserRepository,
-    currentUser: User
+    userRepository: UserRepository
   ) {
     this.invitationRepository = invitationRepository;
     this.userRepository = userRepository;
-    this.currentUser = currentUser;
   }
 
+  /**
+   * Checks if the invitation exists
+   *
+   * @param {string} email - The email address
+   * @returns {Promise<Invitation | null>} The invitation or null if not found
+   * @throws {Error} If the invitation cannot be found
+   */
   async checkInvitation(email: string) {
     try {
       return await this.invitationRepository.getInvitationByEmail(email);
@@ -26,10 +30,17 @@ export class InvitationService {
       serverLogger.error("Failed to check invitation", error as Error, {
         email
       });
+
       throw error;
     }
   }
 
+  /**
+   * Checks if the user exists
+   *
+   * @param {string} email - The email address
+   * @throws {Error} If the user cannot be created
+   */
   async checkExistingUser(email: string) {
     try {
       return await this.userRepository.findByEmail(email);
