@@ -32,6 +32,40 @@ export class UserRepository {
   }
 
   /**
+   * Finds a user by the subaccount ID
+   *
+   * @param {string} agencyId - The agency ID
+   * @param {string} subaccountId - The subaccount ID
+   * @returns {Promise<User | null | undefined>} The user or null if not found
+   * @throws {Error} If the user cannot be found
+   */
+  async findBySubaccountId(
+    agencyId: string,
+    subaccountId: string
+  ): Promise<User | null | undefined> {
+    try {
+      return await db.user.findFirst({
+        where: {
+          OR: [
+            { Agency: { id: agencyId } },
+            { Agency: { SubAccount: { some: { id: subaccountId } } } }
+          ]
+        }
+      });
+    } catch (error: unknown) {
+      serverLogger.error(
+        "Failed to find user by subaccount ID",
+        error as Error,
+        {
+          subaccountId
+        }
+      );
+
+      throw error;
+    }
+  }
+
+  /**
    * Creates a new user and associates it to a team
    *
    * @param {User} user - The user object
