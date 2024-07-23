@@ -1,12 +1,21 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
+import { match } from "@formatjs/intl-localematcher";
+import Negotiator from "negotiator";
 import {
   defaultLocale,
   locales,
   localePrefix,
   pathnames
 } from "./config/config";
+
+const PUBLIC_ROUTES = new Set([
+  "/site",
+  "/api/uploadthing",
+  "/sign-in",
+  "/sign-up"
+]);
 
 const intlMiddleware = createMiddleware({
   defaultLocale,
@@ -15,65 +24,65 @@ const intlMiddleware = createMiddleware({
   pathnames
 });
 
-const publicRoutes = [
-  "/:locale/site",
-  "/api/uploadthing",
-  "/:locale/sign-in",
-  "/:locale/sign-up"
-];
+/**
+ * Gets the locale from the request headers
+ *
+ * @param {NextRequest} request - The request object
+ * @returns {string} The locale
+ */
+function getLocale(request: NextRequest): string {
+  const negotiatorHeader: Record<string, string> = {};
 
-const isPublicRoute = createRouteMatcher(publicRoutes);
+  request.headers.forEach((value, key) => {
+    negotiatorHeader[key] = value;
+  });
+
+  const languages = new Negotiator({ headers: negotiatorHeader }).languages();
+  return match(languages, [...locales], defaultLocale);
+}
 
 /**
- * Middleware for Clerk authentication and internationalization.
+ * Checks if a route is public
  *
- * @param auth - The Clerk authentication object.
- * @param request - The request object.
- *
- * @returns The response object.
+ * @param {string} pathname - The pathname of the route
+ * @returns {boolean} Whether the route is public
  */
-export default clerkMiddleware((auth, request) => {
-  const url = new URL(request.url);
-  const { pathname, hostname, search } = url;
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.has(pathname.split("/").pop() || "");
+}
 
-  if (["/", "/site", "/en", "/es"].includes(pathname)) {
-    const locale = pathname === "/en" ? "en" : "es";
-    return NextResponse.rewrite(new URL(`/${locale}/site`, request.url));
-  }
+export default clerkMiddleware(async (auth, request) => {
+  const { pathname, hostname, search } = new URL(request.url);
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  );
 
-  if (pathname.startsWith("/agency")) {
-    return NextResponse.rewrite(
-      new URL(`/${defaultLocale}${pathname}${search}`, request.url)
+  if (pathnameIsMissingLocale) {
+    const locale = getLocale(request);
+
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname}${search}`, request.url)
     );
   }
 
-  if (pathname.includes("/sign-in") || pathname.includes("/sign-up")) {
-    const subDomain = hostname.split(`.${process.env.NEXT_PUBLIC_DOMAIN}`)[0];
-    return NextResponse.rewrite(
-      new URL(`/${subDomain}/sign-in${search}`, request.url)
-    );
-  }
+  if (!isPublicRoute(pathname)) {
+    const session = await auth().sessionId;
 
-  if (hostname !== "localhost" && !hostname.startsWith("127.0.0.1")) {
-    const subDomain = hostname.split(`.${process.env.NEXT_PUBLIC_DOMAIN}`)[0];
-
-    if (subDomain && subDomain !== "www") {
-      return NextResponse.rewrite(
-        new URL(
-          `/${defaultLocale}/${subDomain}${pathname}${search}`,
-          request.url
-        )
-      );
+    if (!session === null) {
+      return NextResponse.redirect("/sign-in");
     }
   }
 
-  if (!isPublicRoute(request)) {
-    auth().protect();
+  if (pathname === "/" || pathname === "/en" || pathname === "/es") {
+    return NextResponse.redirect(new URL(`/site`, request.url));
   }
 
   return intlMiddleware(request);
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/(es|en)/:path*", "/", "/(api|trpc)(.*)"]
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/(es|en)/:path*"
+  ]
 };
