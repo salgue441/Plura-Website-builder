@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useCallback } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { AuthContext } from "@/contexts/auth-context";
 
 /**
@@ -18,16 +18,16 @@ export const useAuth = () => {
   const { user, isLoading, signOut } = context;
 
   useEffect(() => {
-    if (isLoading && !user) {
+    if (!isLoading && !user) {
       router.replace("/agency/sign-in");
     }
   }, [user, isLoading, router]);
 
-  const redirectoToSignIn = useCallback(() => {
+  const redirectToSignIn = useCallback(() => {
     router.replace("/agency/sign-in");
   }, [router]);
 
-  const redirectoToSignOut = useCallback(() => {
+  const redirectToSignOut = useCallback(() => {
     router.replace("/agency/sign-out");
   }, [router]);
 
@@ -36,7 +36,7 @@ export const useAuth = () => {
     isLoading,
     isAuthenticated: !!user,
     signOut,
-    redirectoToSignIn,
-    redirectoToSignOut
+    redirectToSignIn,
+    redirectToSignOut
   };
 };

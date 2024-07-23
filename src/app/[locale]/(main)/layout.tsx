@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import React from "react";
 import { dark } from "@clerk/themes";
+import { AuthProvider } from "@/contexts/auth-context";
 
 type Props = {
   children: React.ReactNode;
@@ -17,7 +18,9 @@ type Props = {
 export default async function RootLayout({ children }: Props) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
-      <main>{children}</main>
+      <AuthProvider>
+        <main>{children}</main>
+      </AuthProvider>
     </ClerkProvider>
   );
 }
