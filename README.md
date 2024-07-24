@@ -2,17 +2,37 @@
 
 ![Plura](/readme/assets/banner.png)
 
-Plura is a cutting-edge website builder that lets you create stunning websites with ease. Built on Next.js 14 with Bun for package management, it integrates Stripe Connect for seamless transactions, Prisma for robust database management with MySQL, and is styled with the power of TailwindCSS.
+**Plura** is a cutting-edge website builder that empowers you to create stunning websites with ease. Leveraging the latest technologies and design principles, Plura offers a seamless experience for both developers and end-users.
 
-## Features
+## ✨ Features
 
-- **Drag-and-Drop Interface:** Build websites effortlessly by simply dragging and dropping components.
-- **Stripe Connect Integration:** Sell your websites directly to customers using Stripe's powerful payment platform.
-- **Prisma ORM:** Streamline database interactions and operations with Prisma.
-- **MySQL Database:** Reliable and secure storage solution for all your website data.
-- **TailwindCSS Styling:** Customize every aspect of your websites with TailwindCSS's utility-first approach.
-- **Internationalization (i18n):** Reach a global audience with support for English and Spanish languages.
+- 🖱️ Drag-and-Drop Interface: Build websites effortlessly.
+- 💸 Stripe Connect Integration: Sell your websites directly to customers.
+- 🗃️ Prisma ORM: Streamline database interactions.
+- 🛡️ MySQL Database: Reliable and secure data storage.
+- 🎨 TailwindCSS Styling: Customize every aspect of your websites.
+- 🌍 Internationalization (i18n): Support for English and Spanish.
 
-## Inspiration
+## 🏗️ Architecture
 
-This project draws inspiration from [Web Prodigies'](https://www.youtube.com/@webprodigies) tutorial on creating a SaaS Website Builder with NextJS 14, Bun, Stripe Connect, Prisma, and MySQL. Check out the original video [here](https://www.youtube.com/watch?v=6omuUOZcWL0&t=4687s) for more insights.
+Plura is built with modern design and architecture patterns to ensure scalability and maintainability. Here's a high-level overview of the patterns:
+
+- **🏛️ Monolithic Architecture**: Plura is a monolithic application that combines the frontend and backend into a single codebase. This architecture simplifies development and deployment.
+- **📦 DTOs (Data Transfer Objects)**: Structured data transfer between layers to ensure consistency and type safety.
+- **🏭 Factories**: Create complex objects and dependencies efficiently and manageably.
+- **📝 Interfaces**: Define clear contracts for different components, ensuring loose coupling and high cohesion.
+- **📚 Repositories** Abstract data access logic, making it easier to switch between different data sources.
+- **🔧 Services**: Encapsulate business logic, making it reusable and testable.
+
+## 📚 Documentation
+
+- **API Reference**: Detailed information on the available APIs and endpoints.
+- **Design Patterns**: Explanation of the design patterns used in Plura.
+
+## 🎓 Inspiration
+
+Inspired by Web Prodigies' tutorial on creating a SaaS Website Builder. Watch the video here.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
