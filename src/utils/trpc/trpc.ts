@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { serverLogger } from "@/infrastructure/logger/server-logger";
+import { serverLogger } from "@/infrastructure/logger";
 import { TRPCContext } from "./trpc-context";
 
 const t = initTRPC.context<TRPCContext>().create({

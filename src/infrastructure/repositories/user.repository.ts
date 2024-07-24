@@ -1,8 +1,25 @@
-import { db } from "../database";
+import { db } from "../database/prisma";
 import { User } from "@prisma/client";
-import { serverLogger } from "../logger/server-logger";
+import { serverLogger } from "../logger";
 
 export class UserRepository {
+  /**
+   * Creates a new user and associates it to a team
+   *
+   * @param {User} user - The user object
+   * @return {Promise<User>} The created user
+   */
+  async create(user: User): Promise<User> {
+    try {
+      return await db.user.create({
+        data: user
+      });
+    } catch (error: unknown) {
+      serverLogger.error("Failed to create user", error as Error, { user });
+      throw error;
+    }
+  }
+
   /**
    * Find a user by email
    *
@@ -61,23 +78,6 @@ export class UserRepository {
         }
       );
 
-      throw error;
-    }
-  }
-
-  /**
-   * Creates a new user and associates it to a team
-   *
-   * @param {User} user - The user object
-   * @return {Promise<User>} The created user
-   */
-  async create(user: User): Promise<User> {
-    try {
-      return await db.user.create({
-        data: user
-      });
-    } catch (error: unknown) {
-      serverLogger.error("Failed to create user", error as Error, { user });
       throw error;
     }
   }

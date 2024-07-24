@@ -1,6 +1,6 @@
 import { Invitation, InvitationStatus } from "@prisma/client";
-import { db } from "../database";
-import { serverLogger } from "../logger/server-logger";
+import { db } from "../database/prisma";
+import { serverLogger } from "../logger";
 
 export class InvitationRepository {
   /**

@@ -1,7 +1,7 @@
 import { inferAsyncReturnType } from "@trpc/server";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import { db } from "@/infrastructure/database";
+import { db } from "@/infrastructure/database/prisma";
 
 /**
  * Creates a TRPC context with user and database information.

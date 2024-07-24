@@ -1,16 +1,13 @@
-import { UserRepository } from "@/infrastructure/repositories/user.repository";
+import { UserRepository } from "@/infrastructure/repositories";
 import { User } from "@prisma/client";
 import { NotFoundError, UnauthorizedError } from "@/infrastructure/errors";
-import { serverLogger } from "@/infrastructure/logger/server-logger";
+import { serverLogger } from "@/infrastructure/logger";
 
-export class UserServices {
-  private userRepository: UserRepository;
-  private currentUser: User;
-
-  constructor(userRepository: UserRepository, currentUser: User) {
-    this.userRepository = userRepository;
-    this.currentUser = currentUser;
-  }
+export class UserService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly currentUser: User
+  ) {}
 
   /**
    * Gets the authenticated user details
@@ -49,15 +46,34 @@ export class UserServices {
    * @throws {Error} If the user cannot be created
    */
   async createTeamUser(agencyId: string, user: User): Promise<User | null> {
-    try {
-      if (user.role === "AGENCY_OWNER") {
-        throw new UnauthorizedError("Agency owners cannot be team members");
-      }
+    if (user.role === "AGENCY_OWNER") {
+      throw new UnauthorizedError("Agency owners cannot be team members");
+    }
 
+    try {
       return await this.userRepository.create(user);
     } catch (error: unknown) {
       serverLogger.error("Failed to create team user", error as Error, {
         user
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Checks if the user exists based off the email address
+   *
+   * @param {string} email - The email address
+   * @returns {Promise<User | null>} The user or null if not found
+   * @throws {NotFoundError} If the user cannot be found
+   * @throws {Error} If the user details cannot be retrieved
+   */
+  async checkExistingUser(email: string): Promise<User | null | undefined> {
+    try {
+      return await this.userRepository.findByEmail(email);
+    } catch (error: unknown) {
+      serverLogger.error("Failed to check existing user", error as Error, {
+        email
       });
       throw error;
     }

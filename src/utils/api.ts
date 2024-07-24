@@ -2,7 +2,7 @@ import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import superjson from "superjson";
 import { type AppRouter } from "./trpc/trpc";
-import { ClientLogger } from "@/infrastructure/logger/client-logger";
+import { clientLogger } from "@/infrastructure/logger";
 
 /**
  * Gets the base URL.
@@ -31,7 +31,6 @@ export const api = createTRPCNext<AppRouter>({
             process.env.NODE_ENV === "development" ||
             (opts.direction === "down" && opts.result instanceof Error),
           logger: (opts) => {
-            const clientLogger = ClientLogger.getInstance();
             if (opts.direction === "down") {
               clientLogger.info("tRPC request: ", opts);
             } else {

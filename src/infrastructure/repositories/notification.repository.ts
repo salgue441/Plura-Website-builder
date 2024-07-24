@@ -1,7 +1,6 @@
-import { db } from "../database";
-import { NotFoundError } from "../errors";
+import { db } from "../database/prisma";
 import { Notification } from "@prisma/client";
-import { serverLogger } from "../logger/server-logger";
+import { serverLogger } from "../logger";
 
 export class NotificationRepository {
   /**
