@@ -1,4 +1,4 @@
-interface Pricing {
+export interface PricingCards {
   title: string;
   description: string;
   price: string;
