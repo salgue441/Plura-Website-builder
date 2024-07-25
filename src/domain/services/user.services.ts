@@ -1,11 +1,15 @@
-import { UserRepository } from "@/infrastructure/repositories";
+import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
+import { IUserRepository } from "../interfaces";
+import { CreateUserDto } from "../dtos";
+import { UserFactory } from "../factories";
 import { NotFoundError, UnauthorizedError } from "@/infrastructure/errors";
 import { serverLogger } from "@/infrastructure/logger";
 
 export class UserService {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly userFactory: UserFactory,
     private readonly currentUser: User
   ) {}
 
@@ -45,16 +49,17 @@ export class UserService {
    * @throws {UnauthorizedError} If the user is an agency owner
    * @throws {Error} If the user cannot be created
    */
-  async createTeamUser(agencyId: string, user: User): Promise<User | null> {
-    if (user.role === "AGENCY_OWNER") {
+  async createTeamUser(dto: CreateUserDto): Promise<User | null> {
+    if (dto.role === "AGENCY_OWNER") {
       throw new UnauthorizedError("Agency owners cannot be team members");
     }
 
     try {
-      return await this.userRepository.create(user);
+      const userData = await this.userFactory.create(dto);
+      return await this.userRepository.create(userData);
     } catch (error: unknown) {
       serverLogger.error("Failed to create team user", error as Error, {
-        user
+        dto
       });
       throw error;
     }

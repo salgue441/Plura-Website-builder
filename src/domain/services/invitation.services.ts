@@ -1,87 +1,86 @@
+import { Injectable } from "@nestjs/common";
 import { User } from "@clerk/nextjs/server";
-import {
-  InvitationRepository,
-  UserRepository
-} from "@/infrastructure/repositories";
+import type {
+  IInvitationRepository,
+  IUserRepository,
+  PrismaTransaction
+} from "../interfaces";
+import { UserService } from ".";
+import { ClerkService } from ".";
 import { UnauthorizedError, NotFoundError } from "@/infrastructure/errors";
 import { serverLogger } from "@/infrastructure/logger";
-import { db } from "@/infrastructure/database/prisma";
-import { UserService, ClerkService } from ".";
+import { CreateUserDto } from "../dtos";
 
+@Injectable()
 export class InvitationService {
   constructor(
-    private readonly invitationRepository: InvitationRepository,
-    private readonly userRepository: UserRepository,
-    private readonly userSerivces: UserService,
-    private readonly clerkServices: ClerkService
+    private readonly invitationRepository: IInvitationRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly userService: UserService,
+    private readonly clerkService: ClerkService,
+    private readonly prismaTransaction: PrismaTransaction
   ) {}
 
   /**
-   * Checks if the user has an active invitation
+   * Check if the user has an invitation
    *
-   * @param {string} email - The email address
-   * @return {Promise<boolean>} True if the user has an active invitation,
-   *                            false otherwise
-   * @throws {Error} If the check fails
+   * @param {string} email - The email of the user
+   * @returns {Promise<boolean>} - A boolean indicating if the user
+   *                               has an invitation
+   * @throws {Error} - If an error occurs
    */
   async checkInvitation(email: string): Promise<boolean> {
     try {
       const invitation =
-        await this.invitationRepository.getInvitationByEmail(email);
+        await this.invitationRepository.getInivitationByEmail(email);
 
-      return !!invitation;
+      return invitation !== null;
     } catch (error: unknown) {
-      serverLogger.error("Failed to check invitation", error as Error, {
-        email
-      });
-
+      serverLogger.error("Failed to check invitation", error as Error);
       throw error;
     }
   }
 
   /**
-   * Accepts an invitation and creates a new user with the new agency role
+   * Accept an invitation
    *
-   * @param {User} currentUser: The current user object
-   * @return {Promise<string | null>} The agency ID of the new user
-   * @throws {UnauthorizedError} If the user is not authorized to accept the
-   *                             invitation
-   * @throws {NotFoundError} If the invitation cannot be found
+   * @param {User} currentUser - The current user
+   * @returns {Promise<string | null>} - The agency id of the user
+   *                                     or null if the user is not
+   *                                     invited
+   * @throws {UnauthorizedError} - If the user is not authorized
+   * @throws {Error} - If an error occurs
    */
   async acceptInvitation(currentUser: User): Promise<string | null> {
-    try {
-      if (!currentUser) {
-        throw new UnauthorizedError("User not authorized");
-      }
+    if (!currentUser) {
+      throw new UnauthorizedError("User not authorized");
+    }
 
-      const userEmail = currentUser.emailAddresses[0].emailAddress;
-
-      return db.$transaction(async () => {
+    const email = currentUser.emailAddresses[0].emailAddress;
+    return this.prismaTransaction.run(async () => {
+      try {
         const invitation =
-          await this.invitationRepository.getInvitationByEmail(userEmail);
+          await this.invitationRepository.getInivitationByEmail(email);
 
         if (!invitation) {
-          const agency = await this.userRepository.findByEmail(userEmail);
-          return agency ? agency.agencyId : null;
+          const agency = await this.userRepository.findByEmail(email);
+          return agency?.agencyId ?? null;
         }
 
-        const userDetails = await this.userSerivces.createTeamUser(
-          invitation.agencyId,
-          {
-            id: currentUser.id,
-            name: currentUser.fullName || "",
-            email: invitation.email,
-            avatarUrl: currentUser.imageUrl,
-            agencyId: invitation.agencyId,
-            role: invitation.role,
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-        );
+        const createUserDto: CreateUserDto = {
+          name: currentUser.fullName || "",
+          email: invitation.email,
+          avatarUrl: currentUser.imageUrl,
+          agencyId: invitation.agencyId,
+          role: invitation.role
+        };
+
+        const userDetails =
+          await this.userService.createTeamUser(createUserDto);
 
         if (userDetails) {
           await Promise.all([
-            this.clerkServices.updateMetadata(currentUser.id, {
+            this.clerkService.updateMetadata(currentUser.id, {
               privateMetadata: { role: userDetails.role || "SUBACCOUNT_USER" }
             }),
 
@@ -92,14 +91,11 @@ export class InvitationService {
           ]);
         }
 
-        return userDetails?.agencyId || null;
-      });
-    } catch (error: unknown) {
-      serverLogger.error("Failed to accept invitation", error as Error, {
-        currentUser
-      });
-
-      throw error;
-    }
+        return userDetails?.agencyId ?? null;
+      } catch (error: unknown) {
+        serverLogger.error("Failed to accept invitation", error as Error);
+        throw error;
+      }
+    });
   }
 }
