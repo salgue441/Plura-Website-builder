@@ -26,7 +26,7 @@ export class UserRepository {
    * @param {string} email - User email
    * @returns {Promise<User | null | undefined>} User or null if not found
    */
-  async findByEmail(email: string): Promise<User | null | undefined> {
+  async findByEmail(email: string): Promise<User | null> {
     try {
       return await db.user.findUnique({
         where: { email },
@@ -59,7 +59,7 @@ export class UserRepository {
   async findBySubaccountId(
     agencyId: string,
     subaccountId: string
-  ): Promise<User | null | undefined> {
+  ): Promise<User | null> {
     try {
       return await db.user.findFirst({
         where: {

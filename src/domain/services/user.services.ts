@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { User } from "@prisma/client";
-import { IUserRepository } from "../interfaces";
+import type { User } from "@prisma/client";
+import type { IUserRepository } from "../interfaces";
 import { CreateUserDto } from "../dtos";
 import { UserFactory } from "../factories";
 import { NotFoundError, UnauthorizedError } from "@/infrastructure/errors";
 import { serverLogger } from "@/infrastructure/logger";
 
+@Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -36,6 +37,7 @@ export class UserService {
         "Failed to get authenticated user details",
         error as Error
       );
+
       throw error;
     }
   }
@@ -61,6 +63,7 @@ export class UserService {
       serverLogger.error("Failed to create team user", error as Error, {
         dto
       });
+
       throw error;
     }
   }
@@ -80,6 +83,7 @@ export class UserService {
       serverLogger.error("Failed to check existing user", error as Error, {
         email
       });
+
       throw error;
     }
   }

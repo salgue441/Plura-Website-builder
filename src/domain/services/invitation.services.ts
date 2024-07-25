@@ -32,7 +32,7 @@ export class InvitationService {
   async checkInvitation(email: string): Promise<boolean> {
     try {
       const invitation =
-        await this.invitationRepository.getInivitationByEmail(email);
+        await this.invitationRepository.getInvitationByEmail(email);
 
       return invitation !== null;
     } catch (error: unknown) {
@@ -60,7 +60,7 @@ export class InvitationService {
     return this.prismaTransaction.run(async () => {
       try {
         const invitation =
-          await this.invitationRepository.getInivitationByEmail(email);
+          await this.invitationRepository.getInvitationByEmail(email);
 
         if (!invitation) {
           const agency = await this.userRepository.findByEmail(email);
