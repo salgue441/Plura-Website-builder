@@ -1,26 +1,14 @@
-import { User as ClerkUser } from "@clerk/nextjs/server";
-import { User as PrismaUser, Role } from "@prisma/client";
-import { CreateUserDto } from "@/domain/dtos";
+import { User } from "@/domain/models";
+import { User as PrismaUser } from "@prisma/client";
 
-/**
- * Maps a Clerk user to a Prisma user.
- *
- * @param {ClerkUser} clerkUser - The Clerk user to map.
- * @param {CreateUserDto} dto - The DTO to map.
- * @returns {PrismaUser} The mapped Prisma user.
- */
-export function mapClerkUserToPrismaUser(
-  clerkUser: ClerkUser,
-  dto: CreateUserDto
-): PrismaUser {
+export function mapPrismaUserToUser(prismaUser: PrismaUser): User {
   return {
-    id: clerkUser.id,
-    name: clerkUser.fullName || "",
-    email: clerkUser.emailAddresses[0].emailAddress,
-    avatarUrl: clerkUser.imageUrl,
-    agencyId: dto.agencyId,
-    role: dto.role as Role,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    id: prismaUser.id,
+    name: prismaUser.name,
+    email: prismaUser.email,
+    avatarUrl: prismaUser.avatarUrl,
+    role: prismaUser.role,
+    agencyId: prismaUser.agencyId as string,
+    createdAt: prismaUser.createdAt
   };
 }

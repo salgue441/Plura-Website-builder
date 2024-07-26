@@ -6,7 +6,7 @@ import {
   CardContent,
   CardFooter
 } from "@/components/ui/card";
-import { PricingCards } from "@/domain/models/pricing-card.model";
+import { PricingCards } from "@/domain/models";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import Link from "next/link";

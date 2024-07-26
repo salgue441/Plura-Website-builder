@@ -1,2 +1,2 @@
-export { NotificationFactory } from "./notification.factory";
 export { UserFactory } from "./user.factory";
+export { InvitationFactory } from "./invitation.factory";

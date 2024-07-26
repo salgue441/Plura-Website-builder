@@ -1,4 +1,4 @@
-export { UserService } from "./user.services";
-export { InvitationService } from "./invitation.services";
-export { ClerkService } from "./clerk.services";
-export { NotificationService } from "./notification.services";
+export { UserService } from "./user.service";
+export { ClerkService } from "./clerk.service";
+export { InvitationService } from "./invitation.service";
+export { AuthService } from "./auth.service";

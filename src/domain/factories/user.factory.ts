@@ -1,13 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { Role, User } from "@prisma/client";
+import { Role } from "@prisma/client";
+import type { User } from "../models";
 import { randomUUID } from "crypto";
 
-/**
- * Factory for creating new users
- *
- * @class UserFactory
- */
-@Injectable()
 export class UserFactory {
   /**
    * Creates a new user object
@@ -36,7 +30,7 @@ export class UserFactory {
       avatarUrl: params.avatarUrl,
       agencyId: params.agencyId,
       role: params.role as Role,
-      createdAt: params.createdAt || new Date()
+      createdAt: params.createdAt ?? new Date()
     };
   }
 }

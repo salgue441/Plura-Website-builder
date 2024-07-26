@@ -1,71 +1,49 @@
-import { CreateUserDto } from "@/domain/dtos";
-import { UserFactory } from "@/domain/factories";
-import { PrismaTransaction } from "@/domain/interfaces";
+import { NextApiRequest, NextApiResponse } from "next";
 import {
-  ClerkService,
-  InvitationService,
-  UserService
-} from "@/domain/services";
-import { mapClerkUserToPrismaUser } from "@/infrastructure/mappers/user.mapper";
-import {
-  InvitationRepository,
-  UserRepository
+  UserRepository,
+  InvitationRepository
 } from "@/infrastructure/repositories";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import {
+  InvitationService,
+  AuthService,
+  ClerkService
+} from "@/domain/services";
+import { InvitationFactory } from "@/domain/factories";
 import { NextRequest, NextResponse } from "next/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+
+const userRepository = new UserRepository();
+const invitationRepository = new InvitationRepository();
+const clerkService = new ClerkService();
+const invitationService = new InvitationService(
+  invitationRepository,
+  userRepository,
+  new InvitationFactory()
+);
 
 /**
- * Posts the requested agency ID to the server and returns the agency ID.
+ * Accepts an invitation
  *
- * @handler /api/invitation
  * @method POST
+ * @api /api/invitation
  *
- * @param {NextRequest} request - The request object.
- * @returns {Promise<NextResponse>} The response object.
- * @throws {Error} If the user is not authenticated or the user is not found.
+ * @param {NextApiRequest} req - The request object
+ * @returns {Promise<NextResponse>} The response object
  */
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const { userId } = auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await currentUser();
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  const createUserDto: CreateUserDto = {
-    name: user.fullName || "",
-    email: user.emailAddresses[0].emailAddress,
-    avatarUrl: user.imageUrl,
-    agencyId: "",
-    role: ""
-  };
-
-  const prismaTransaction: PrismaTransaction = {
-    run: async <T>(callback: () => Promise<T>): Promise<T> => callback()
-  };
-
-  const invitationService = new InvitationService(
-    new InvitationRepository(),
-    new UserRepository(),
-    new UserService(
-      new UserRepository(),
-      new UserFactory(),
-      mapClerkUserToPrismaUser(user, createUserDto)
-    ),
-    new ClerkService(),
-    prismaTransaction
-  );
-
   try {
-    const agencyId = await invitationService.acceptInvitation(user);
-    return NextResponse.json({ agencyId }, { status: 200 });
-  } catch (error: unknown) {
+    await invitationService.acceptInvitation("", userId);
     return NextResponse.json(
-      { message: "Failed to accept invitation" },
-      { status: 500 }
+      { message: "Invitation accepted" },
+      { status: 200 }
     );
+  } catch (error: unknown) {
+    console.error(error);
+    return NextResponse.json({ message: "An error occurred" }, { status: 500 });
   }
 }
